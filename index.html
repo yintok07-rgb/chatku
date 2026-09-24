@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChatKu</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #efeae2;
+}
+
+header {
+    background: #075e54;
+    color: white;
+    padding: 16px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#chat {
+    height: calc(100vh - 125px);
+    overflow-y: auto;
+    padding: 15px;
+}
+
+.pesan {
+    max-width: 75%;
+    padding: 10px 13px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    word-wrap: break-word;
+}
+
+.saya {
+    background: #d9fdd3;
+    margin-left: auto;
+}
+
+.orang {
+    background: white;
+    margin-right: auto;
+}
+
+form {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    padding: 8px;
+    background: #eee;
+}
+
+input {
+    flex: 1;
+    padding: 13px;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    outline: none;
+}
+
+button {
+    margin-left: 8px;
+    width: 50px;
+    border: none;
+    border-radius: 50%;
+    background: #075e54;
+    color: white;
+    font-size: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    💬 ChatKu
+</header>
+
+<div id="chat"></div>
+
+<form id="form">
+    <input id="pesan" type="text" placeholder="Ketik pesan..." autocomplete="off">
+    <button type="submit">➤</button>
+</form>
+
+<script type="module">
+
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+    getDatabase,
+    ref,
+    push,
+    onChildAdded
+} from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+/* FIREBASE KAMU */
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBbJ42S4TJaZhc0z3bzOqdy9m71KwTou-c",
+    authDomain: "keinginan-dia.firebaseapp.com",
+    databaseURL: "https://keinginan-dia-default-rtdb.firebaseio.com",
+    projectId: "keinginan-dia",
+    storageBucket: "keinginan-dia.firebasestorage.app",
+    messagingSenderId: "687114270810",
+    appId: "1:687114270810:web:356427bb7152f272b28063"
+};
+
+
+/* HUBUNGKAN FIREBASE */
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const pesanRef = ref(db, "pesan");
+
+const chat = document.getElementById("chat");
+const form = document.getElementById("form");
+const input = document.getElementById("pesan");
+
+
+/* KIRIM PESAN */
+
+form.addEventListener("submit", function(e) {
+
+    e.preventDefault();
+
+    const teks = input.value.trim();
+
+    if (teks === "") return;
+
+    push(pesanRef, {
+        teks: teks,
+        waktu: Date.now()
+    });
+
+    input.value = "";
+
+});
+
+
+/* TERIMA PESAN */
+
+onChildAdded(pesanRef, function(data) {
+
+    const pesan = data.val();
+
+    const div = document.createElement("div");
+
+    div.className = "pesan orang";
+
+    div.textContent = pesan.teks;
+
+    chat.appendChild(div);
+
+    chat.scrollTop = chat.scrollHeight;
+
+});
+
+</script>
+
+</body>
+</html>
